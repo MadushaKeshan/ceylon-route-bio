@@ -24,6 +24,8 @@ export default function App() {
   const [showLogin, setShowLogin] = useState(false);
   const [passwordInput, setPasswordInput] = useState('');
   const [tapCount, setTapCount] = useState(0); 
+  
+  // නිවැරදි කළ Default State එක
   const [profile, setProfile] = useState({
     name: 'Ceylon Route',
     description: 'Download our App & Explore Sri Lanka 👇',
@@ -103,16 +105,23 @@ export default function App() {
               
               <div className="grid grid-cols-2 gap-4">
                 <div className="p-4 bg-slate-50 rounded-xl border-2 border-dashed border-slate-200 text-center">
-                  <label className="text-xs font-bold text-slate-500 block mb-2 uppercase cursor-pointer hover:text-blue-500">Change Logo</label>
+                  <label className="text-xs font-bold text-slate-500 block uppercase cursor-pointer hover:text-blue-500">Change Logo</label>
+                  <span className="text-[9px] text-gray-400 block mb-2 font-mono">1:1 (500x500px)</span>
                   <input type="file" accept="image/*" onChange={e => handleImage(e, b => setProfile({...profile, logoUrl: b}))} className="text-xs w-full text-slate-500" />
                 </div>
                 <div className="p-4 bg-slate-50 rounded-xl border-2 border-dashed border-slate-200 text-center">
-                  <label className="text-xs font-bold text-slate-500 block mb-2 uppercase cursor-pointer hover:text-blue-500">Change Bg Image</label>
+                  <label className="text-xs font-bold text-slate-500 block uppercase cursor-pointer hover:text-blue-500">Change Bg Image</label>
+                  <span className="text-[9px] text-gray-400 block mb-2 font-mono">9:16 (1080x1920px)</span>
                   <input type="file" accept="image/*" onChange={e => handleImage(e, b => setProfile({...profile, bgUrl: b}))} className="text-xs w-full text-slate-500" />
                 </div>
               </div>
 
-              <input type="url" className="w-full p-3 bg-blue-50 border border-blue-100 rounded-xl outline-none" placeholder="Video URL (.mp4)" value={profile.bgVideoUrl} onChange={e => setProfile({...profile, bgVideoUrl: e.target.value})} />
+              <div className="p-4 bg-blue-50 border border-blue-100 rounded-xl">
+                <label className="text-xs font-bold text-slate-600 block mb-1 uppercase">Background Video Link (.mp4)</label>
+                <p className="text-[10px] text-slate-500 mb-2 leading-tight">වීඩියෝ කෙලින්ම Upload කළ නොහැක. කරුණාකර ඔබගේ cPanel එකට හෝ වෙනත් තැනකට වීඩියෝව දමා, එහි ලින්ක් එක මෙතනට Paste කරන්න. <br/><span className="font-mono text-blue-600">Size: 9:16 (1080x1920px) | Under 5MB</span></p>
+                <input type="url" className="w-full p-3 bg-white border border-blue-200 rounded-lg outline-none text-sm" placeholder="[https://ceylonroute.com/video.mp4](https://ceylonroute.com/video.mp4)" value={profile.bgVideoUrl} onChange={e => setProfile({...profile, bgVideoUrl: e.target.value})} />
+              </div>
+
               <button onClick={async () => { await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'profile'), profile); setIsEditingProfile(false); alert("Success!"); }} className="w-full bg-blue-600 text-white font-bold py-4 rounded-2xl shadow-lg hover:bg-blue-700">SAVE PROFILE</button>
             </div>
           ) : (
@@ -139,7 +148,10 @@ export default function App() {
                 {!editingLink.isImage ? (
                     <input className="w-full p-3 bg-black/20 rounded-lg text-sm border border-white/20 outline-none placeholder:text-white/40" placeholder="e.g. fab fa-youtube" value={editingLink.icon} onChange={e => setEditingLink({...editingLink, icon: e.target.value})} />
                 ) : (
-                    <input type="file" accept="image/*" onChange={e => handleImage(e, b => setEditingLink({...editingLink, imageSrc: b}))} className="text-sm w-full bg-black/20 p-2 rounded-lg" />
+                    <div>
+                        <p className="text-[10px] text-white/60 mb-1 font-mono">Size: 1:1 (100x100px PNG)</p>
+                        <input type="file" accept="image/*" onChange={e => handleImage(e, b => setEditingLink({...editingLink, imageSrc: b}))} className="text-sm w-full bg-black/20 p-2 rounded-lg" />
+                    </div>
                 )}
               </div>
 
@@ -182,10 +194,12 @@ export default function App() {
       <div className="fixed inset-0 w-full h-full bg-cover bg-center z-0" style={{ backgroundImage: `url(${profile.bgUrl})` }}></div>
       
       {/* Video Background Layer */}
-      <div className="fixed inset-0 z-0">
-        <video autoPlay loop muted playsInline webkit-playsinline="true" crossOrigin="anonymous" className="w-full h-full object-cover opacity-60 grayscale-[0.2]" src={profile.bgVideoUrl}></video>
-        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/70 to-black backdrop-blur-[5px]"></div>
-      </div>
+      {profile.bgVideoUrl && (
+        <div className="fixed inset-0 z-0">
+          <video autoPlay loop muted playsInline webkit-playsinline="true" crossOrigin="anonymous" className="w-full h-full object-cover opacity-60 grayscale-[0.2]" src={profile.bgVideoUrl}></video>
+          <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/70 to-black backdrop-blur-[5px]"></div>
+        </div>
+      )}
 
       <div className="relative z-10 max-w-sm mx-auto px-6 pt-16 pb-20 flex flex-col items-center">
         
